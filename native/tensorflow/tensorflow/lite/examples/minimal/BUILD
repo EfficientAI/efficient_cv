@@ -25,3 +25,21 @@ cc_binary(
         "//tensorflow/lite/kernels:builtin_ops",
     ],
 )
+
+cc_binary(
+    name = "test",
+    srcs = [
+        "test.cpp",
+    ],
+    linkopts = tflite_linkopts() + select({
+        "//tensorflow:android": [
+            "-pie",  # Android 5.0 and later supports only PIE
+            "-lm",  # some builtin ops, e.g., tanh, need -lm
+        ],
+        "//conditions:default": [],
+    }),
+    deps = [
+        "//tensorflow/lite:framework",
+        "//tensorflow/lite/kernels:builtin_ops",
+    ],
+)
