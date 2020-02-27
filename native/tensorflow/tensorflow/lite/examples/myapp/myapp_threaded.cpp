@@ -48,7 +48,7 @@ int main(int argc, char* argv[]) {
     cout << "Inputs are loop, compute_time, sleep_time, nr_threads" << endl;
     cout << "myapp_threaded program" << endl;
     if (argc != 5) {
-        fprintf(stderr, "myapp <tflite model> nr_runs loop compute_time sleep_time nr_thread\n");
+        fprintf(stderr, "myapp <tflite model> nr_runs thread_run_time compute_time\n");
         return 1;
     }
     const char* filename = argv[1];
@@ -126,8 +126,16 @@ int main(int argc, char* argv[]) {
     // For each run, we will note the runtime (input buffer allocation + model runtime)
     //vector<int> runtimes;
     int diff;
-    vector<int> thread_tries = {1, 2, 4, 8, 16};
-    vector<int> nr_load_checkpoints = {300, 200, 100, 50, 20, 10, 5, 3,2,1};
+    vector<int> thread_tries = {8};
+    vector<int> nr_load_checkpoints = {100, 50, 10, 5,1};
+    // Warm start
+    {
+        auto input = interpreter->typed_tensor<float>(0);
+        for(int i = 0; i < number_of_pixels; i++) {
+            input[i] = 1;
+        }
+        TFLITE_MINIMAL_CHECK(interpreter->Invoke() == kTfLiteOk);
+    }
     for(int i=0;i<thread_tries.size();i++){
         for(int j = 0;j<nr_load_checkpoints.size();j++){
             cout << "Number of threads: " << thread_tries[i] << endl;
@@ -138,7 +146,8 @@ int main(int argc, char* argv[]) {
                 thread th(workload, val*thread_time, compute_time, nr_load_checkpoints[j]);
                 threads.push_back(std::move(th));
             }
-            cout << "Thread started, starting inference" << endl;
+            cout << "Thread started, starting inference in 1 second" << endl;
+            this_thread::sleep_for(chrono::milliseconds(1000));
             for(int k=0;k<val;k++){
                 start = chrono::steady_clock::now();
                 // setup the buffer
