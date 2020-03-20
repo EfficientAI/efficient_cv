@@ -79,10 +79,10 @@ def calculate_accuracy(model, val_loader):
 
 def train(config, model_def, dataset, experiment):
     print("Device selected: ", device)
-    # data_path = '/mnt/nfs/scratch1/vkeshav/vision/dataset'
     data_path = 'temp/dataset'
-    # model_path = '/mnt/nfs/scratch1/vkeshav/vision/saved_models'
+    data_path = '/mnt/nfs/scratch1/vkeshav/vision/dataset'
     model_path = 'temp/saved_models'
+    model_path = '/mnt/nfs/scratch1/vkeshav/vision/saved_models'
 
     learning_rate = config['learning_rate']
     nr_epochs = config['nr_epochs']
