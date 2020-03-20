@@ -25,8 +25,8 @@ np.random.seed(42)
 
 def main():
     # #params:
-    config = {'learning_rate': 0.0001,
-              'nr_epochs': 500,
+    config = {'learning_rate': 0.001,
+              'nr_epochs': 200,
               'batch_size': 8}
     batch_size = 1
     model_name = stringify(["model_"] +

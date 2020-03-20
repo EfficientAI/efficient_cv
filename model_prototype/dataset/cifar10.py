@@ -1,4 +1,4 @@
-
+import numpy as np
 import torch
 from torchvision import datasets
 import torchvision.transforms as transforms
@@ -24,16 +24,18 @@ class dataset(Dataset):
             idx = idx.tolist()
         img, label = self.dataset[idx]
         img = img.to(device)
+        label = np.array(label)
+        label = torch.from_numpy(label).to(device)
         return img, label
 
     def __len__(self):
         return len(self.dataset)
 
-################################## Test ########################################
+# ################################# Test ######################################
 
 
 def test():
-    d = dataset()
+    d = dataset('temp/dataset')
     print(len(d))
     img1, label1 = d[0]
     print(img1.size(), label1)
