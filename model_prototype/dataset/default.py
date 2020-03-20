@@ -2,12 +2,13 @@ import os
 import sys
 
 import torch
-import torchvision
-import torchvision.transforms as transforms
+# import torchvision
+# import torchvision.transforms as transforms
 from torch.utils.data import Dataset
 
 sys.path.append(os.path.abspath('.'))
-#from utils.utils import stringify
+# from utils.utils import stringify
+
 
 is_cuda = torch.cuda.is_available()
 device = torch.device("cuda" if is_cuda else "cpu")
@@ -23,7 +24,7 @@ class dataset(Dataset):
     def __len__(self):
         return 100
 
-################################## Test ########################################
+# ################################# Test ######################################
 
 
 def test():

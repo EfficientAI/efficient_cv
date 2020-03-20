@@ -1,15 +1,16 @@
 import os
-import sys
+# import sys
 import random
 import numpy as np
 
 import torch
 from torch.utils.data import DataLoader
 
-from utils import *
-from plot_utils import *
+from utils import stringify
+# from plot_utils import *
 
-sys.path.append(os.path.abspath('.'))
+# sys.path.append(os.path.abspath('.'))
+
 from model.default import model as model_def
 from dataset.default import dataset
 
@@ -21,27 +22,29 @@ torch.cuda.manual_seed(42)
 random.seed(42)
 np.random.seed(42)
 
+
 def main():
-    ## params:
+    # #params:
     config = {'learning_rate': 0.0001,
               'nr_epochs': 500,
-              'batch_size': 8
-    }
+              'batch_size': 8}
     batch_size = 1
-    model_name = stringify(["model_"]+
-                [str(k)+'_'+str(config[k]) for k in config \
-                       if type(config[k])==int or type(config[k])==float])+'.pt'
+    model_name = stringify(["model_"] +
+                           [str(k)+'_'+str(config[k]) for k in config
+                            if type(config[k]) == int or
+                            type(config[k]) == float])+'.pt'
     model_path = ''
-    data_path = ''
+    # data_path = ''
     
-    train_dataset = dataset()
-    train_loader =DataLoader(train_dataset,batch_size=batch_size,shuffle = True)
+    # train_dataset = dataset()
+    # train_loader = DataLoader(train_dataset, batch_size=batch_size,
+    #                           shuffle=True)
     test_dataset = dataset()
-    val_loader = DataLoader(test_dataset, batch_size = batch_size,shuffle=False)
+    val_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
 
     model_inference = model_def()
     model_inference.load_state_dict(torch.load(
-                   os.path.join(model_path, model_name), map_location = device))
+                   os.path.join(model_path, model_name), map_location=device))
     model_inference.eval()
 
     labels = np.array([])
@@ -52,6 +55,7 @@ def main():
         outputs = np.append(outputs, prob.data.to('cpu'))
     print(labels)
     print(outputs)
+
 
 if __name__ == "__main__":
     main()

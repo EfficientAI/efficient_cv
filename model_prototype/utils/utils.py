@@ -1,9 +1,11 @@
 import os
-import numpy as np
+# import numpy as np
+
 
 def parse_comet_config(configs):
     """
-    retrives vizier compatible configuration(only descrete values are supported)
+    retrives vizier compatible configuration(only descrete values are
+    supported)
     used for creating a comet.ml configuration dictionary
     """
     params = {}
@@ -13,10 +15,10 @@ def parse_comet_config(configs):
     vizier_config = {'algorithm': configs['algorithm'],
                      'parameters': params,
                      'spec': {'metric': configs['metric'],
-                     'maxCombo':configs['maxCombo'] ,
-                     'objective': configs['objective']}
-                     }
+                              'maxCombo': configs['maxCombo'],
+                              'objective': configs['objective']}}
     return vizier_config
+
 
 def get_parameters(comet_experiment, configs):
     """
@@ -31,6 +33,7 @@ def get_parameters(comet_experiment, configs):
             cf[k] = configs[k]
     return cf
 
+
 def get_configurations(configs):
     """
     Builds a list of all possible configuration dictionary
@@ -38,8 +41,9 @@ def get_configurations(configs):
     """
     all_configs = []
     config_keys = list(configs.keys())
+
     def recursive_config_list_builder(param_type_index, current_param_dict,
-                                                                    param_list):
+                                      param_list):
         if param_type_index == len(param_list):
             all_configs.append(current_param_dict)
         else:
@@ -47,17 +51,18 @@ def get_configurations(configs):
                 for val in configs[param_list[param_type_index]]:
                     temp = current_param_dict.copy()
                     temp[param_list[param_type_index]] = val
-                    recursive_config_list_builder(param_type_index+1, temp, 
-                                                                     param_list)
+                    recursive_config_list_builder(param_type_index+1, temp,
+                                                  param_list)
             else:
                 temp = current_param_dict.copy()
-                temp[param_list[param_type_index]] = \
-                                          configs[config_keys[param_type_index]]
+                temp[param_list[param_type_index]] = configs[
+                                            config_keys[param_type_index]]
                 recursive_config_list_builder(param_type_index+1, temp,
-                                                                     param_list)
+                                              param_list)
 
     recursive_config_list_builder(0, dict(), config_keys)
     return all_configs
+
 
 def hit_refresh():
     e = os.path.isfile("refresh")
@@ -67,6 +72,7 @@ def hit_refresh():
     else:
         return False
 
+
 def stringify(vals):
     """
     return a string version of vals (a list of object implementing __str__)
@@ -74,16 +80,18 @@ def stringify(vals):
     """
     return '_'.join([str(e) for e in vals])
 
-def valuefy(strings, type_cast = None):
+
+def valuefy(strings, type_cast=None):
     """
     return a list of value, type casted by type_cast list
     return type: list if values
     By default, type cast is int
     """
     vals_string = strings.split('_')
-    if type_cast == None:
+    if type_cast is None:
         type_cast = [int]*len(vals_string)
-    return [t(e) for e,t in zip(vals_string, type_cast)]
+    return [t(e) for e, t in zip(vals_string, type_cast)]
+
 
 def folder_exists(path):
     """
@@ -91,17 +99,19 @@ def folder_exists(path):
     There is no output.
     """
     try:
-        os.makedirs(path)    
+        os.makedirs(path)
     except FileExistsError:
         pass
 
+
 def generate_permulations(param_list):
     """
-    param_list is a list(types of parameter) of list(possible parameter values).
+    param_list is a list(types of parameter) of list(possible parameter values)
     returns a list(all permulation) of list(parameter value) in same order
     as in param_list
     """
     permu = []
+
     def recurse(param_type_index, current_param_value, param_list):
         if param_type_index == len(param_list):
             permu.append(current_param_value)
@@ -113,63 +123,70 @@ def generate_permulations(param_list):
     recurse(0, [], param_list)
     return permu
 
-################################### Test #######################################
+# ################################## Test #####################################
+
+
 def test_generate_permulations():
-    a = [[1,2], ['a', 'b'], ["String1", "String2", "String3"]]
+    a = [[1, 2], ['a', 'b'], ["String1", "String2", "String3"]]
     b = generate_permulations(a)
     print(b)
+
 
 def test_folder_exists():
     path = '/home/vishal/test_folder/test'
     folder_exists(path)
+
 
 def test_stringify():
     a = ['abc', 34, 1.89, 'c']
     b = stringify(a)
     print(b)
 
+
 def test_valuefy():
     a = '34_1.28_500_str'
     b = valuefy(a, [int, float, int, str])
     print(b)
 
+
 def test_parse_comet_config():
-    config={
+    config = {
         'project_name': 'project',
         'workspace': 'workspace',
-        ############## USE LISTS FOR HP ##############
+        # ############# USE LISTS FOR HP ##############
         'learning_rate': [0.0001, 0.00001],
         'nr_epochs': [100, 200],
         'batch_size': [8, 16],
-        ##############################################
+        # #############################################
         'metric': 'loss',
         'objective': 'maximize',
-        'algorithm': 'bayes'
-    }
+        'algorithm': 'bayes'}
     vizier_config = parse_comet_config(config)
     print(vizier_config)
+
 
 def test_get_parameters():
     # No test
     pass
 
+
 def test_get_configurations():
-    configs={
+    configs = {
         'project_name': 'wesad',
         'workspace': 'vishal-keshav',
-        ############## USE LISTS FOR HP ##############
+        # ############# USE LISTS FOR HP ##############
         'learning_rate': [0.0001, 0.00001],
-        'nr_epochs': [100, 200,500],
+        'nr_epochs': [100, 200, 500],
         'batch_size': [8, 16],
-        ##############################################
+        # #############################################
         'metric': 'loss',
         'objective': 'maximize',
-        'algorithm': 'bayes'
-    }
+        'algorithm': 'bayes'}
     all_configs = get_configurations(configs)
     for config in all_configs:
         print(config)
         print()
+
 
 if __name__ == "__main__":
     pass

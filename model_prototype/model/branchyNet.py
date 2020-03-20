@@ -1,13 +1,13 @@
 import os
 import sys
-#import numpy as np
+# import numpy as np
 
 import torch
 import torch.nn as nn
-#from torch.autograd import Variable
+# from torch.autograd import Variable
 
 sys.path.append(os.path.abspath('.'))
-#from utils.utils import stringify
+# from utils.utils import stringify
 
 
 is_cuda = torch.cuda.is_available()
@@ -105,7 +105,7 @@ class model(nn.Module):
             self.prob(logit4)
 
 
-#################################### Test ######################################
+# ################################### Test ####################################
 
 
 def test():

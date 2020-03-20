@@ -9,7 +9,7 @@ from torch import optim
 
 from torch.utils.data import DataLoader
 
-sys.path.append(os.path.abspath('.'))
+# sys.path.append(os.path.abspath('.'))
 from utils.utils import stringify
 
 is_cuda = torch.cuda.is_available()
@@ -155,7 +155,7 @@ def train(config, model_def, dataset, experiment):
                          or type(config[k]) == float])+'.pt'))
     print("Model written to disc")
 
-##################################### Test #####################################
+# #################################### Test ###################################
 
 
 def test():
