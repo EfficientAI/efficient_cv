@@ -39,6 +39,8 @@ def get_configurations(configs):
     Builds a list of all possible configuration dictionary
     from one configuration dictionary that contains all values for a key
     """
+    if type(configs) == list:
+        return configs
     all_configs = []
     config_keys = list(configs.keys())
 
@@ -182,6 +184,7 @@ def test_get_configurations():
         'metric': 'loss',
         'objective': 'maximize',
         'algorithm': 'bayes'}
+    # configs = [{'a':1, 'b': 2}, {'a': 1, 'b': 3}]
     all_configs = get_configurations(configs)
     for config in all_configs:
         print(config)
@@ -189,4 +192,5 @@ def test_get_configurations():
 
 
 if __name__ == "__main__":
+    test_get_configurations()
     pass
