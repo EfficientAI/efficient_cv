@@ -72,6 +72,7 @@ public abstract class CameraActivity extends AppCompatActivity
   private Handler handler;
   private HandlerThread handlerThread;
   private boolean useCamera2API;
+  protected int nr_dropped_frames = 0;
   private boolean isProcessingFrame = false;
   private byte[][] yuvBytes = new byte[3][];
   private int[] rgbBytes = null;
@@ -273,9 +274,14 @@ public abstract class CameraActivity extends AppCompatActivity
       }
 
       if (isProcessingFrame) {
+        LOGGER.i("[VK] Frame dropped");
+        nr_dropped_frames = nr_dropped_frames + 1;
         image.close();
         return;
       }
+      LOGGER.i("[VK_stats] Nr_frame_dropped: %d", nr_dropped_frames);
+      LOGGER.i("[VK] Frame processed");
+      nr_dropped_frames = 0;
       isProcessingFrame = true;
       Trace.beginSection("imageAvailable");
       final Plane[] planes = image.getPlanes();
