@@ -64,6 +64,15 @@ def main():
     tflite_model = converter.convert()
     open(os.path.join(model_path, "model.tflite"), "wb").write(tflite_model)
 
+    # Generate sub-models
+    for i in range(1, 5):
+        output_arrays = ['out'+str(i)]
+        converter = tf.lite.TFLiteConverter.from_frozen_graph(
+            graph_def_file, input_arrays, output_arrays)
+        tflite_model = converter.convert()
+        model_name = "model_{}.tflite".format(i)
+        open(os.path.join(model_path, model_name), "wb").write(tflite_model)
+
 
 if __name__ == "__main__":
     main()
