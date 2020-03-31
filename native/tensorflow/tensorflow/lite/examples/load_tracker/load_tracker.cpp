@@ -37,23 +37,27 @@ size_t GetIdleTime(const CPUData & e);
 size_t GetActiveTime(const CPUData & e);
 
 void PrintStats(const std::vector<CPUData> & entries1, const std::vector<CPUData> & entries2);
+float get_avg_load(int sleep_time);
 
 int main(int argc, char * argv[])
 {
-	std::vector<CPUData> entries1;
-	std::vector<CPUData> entries2;
-
-	// snapshot 1
-	ReadStatsCPU(entries1);
-
-	// 100ms pause
-	std::this_thread::sleep_for(std::chrono::milliseconds(100));
-
-	// snapshot 2
-	ReadStatsCPU(entries2);
-
-	// print output
-	PrintStats(entries1, entries2);
+	int nr_iter = 1;
+	int nr_avg_iter = 10;
+	int sleep_time = 10;
+	for(int i=0; i<nr_iter; i++){
+		float total_avg_load = 0.0;
+		for(int j=0;j<nr_avg_iter;j++){
+			total_avg_load += get_avg_load(sleep_time);
+		}
+		total_avg_load = total_avg_load/float(nr_avg_iter);
+		std::cout << total_avg_load << std::endl;
+		//std::vector<CPUData> entries1;
+		//std::vector<CPUData> entries2;
+		//ReadStatsCPU(entries1);
+		//std::this_thread::sleep_for(std::chrono::milliseconds(sleep_time));
+		//ReadStatsCPU(entries2);
+		//PrintStats(entries1, entries2);
+	}
 
 	return 0;
 }
@@ -112,6 +116,24 @@ size_t GetActiveTime(const CPUData & e)
 			e.times[S_STEAL] +
 			e.times[S_GUEST] +
 			e.times[S_GUEST_NICE];
+}
+
+float get_avg_load(int sleep_time)
+{
+	std::vector<CPUData> entries1;
+	std::vector<CPUData> entries2;
+	ReadStatsCPU(entries1);
+	std::this_thread::sleep_for(std::chrono::milliseconds(sleep_time));
+	ReadStatsCPU(entries2);
+	const size_t NUM_ENTRIES = entries1.size();
+	float avg_load = 0.0;
+	const CPUData & e1 = entries1[0];
+	const CPUData & e2 = entries2[0];
+	const float ACTIVE_TIME	= static_cast<float>(GetActiveTime(e2) - GetActiveTime(e1));
+	const float IDLE_TIME	= static_cast<float>(GetIdleTime(e2) - GetIdleTime(e1));
+	const float TOTAL_TIME	= ACTIVE_TIME + IDLE_TIME;
+	avg_load = (100.f * ACTIVE_TIME / TOTAL_TIME);
+	return avg_load;
 }
 
 void PrintStats(const std::vector<CPUData> & entries1, const std::vector<CPUData> & entries2)
