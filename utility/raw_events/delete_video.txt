@@ -1,0 +1,8 @@
+TOUCH|{'x':533,'y':1692,'type':'downAndUp',}
+TOUCH|{'x':104,'y':600,'type':'downAndUp',}
+TOUCH|{'x':182,'y':460,'type':'downAndUp',}
+TOUCH|{'x':877,'y':1824,'type':'downAndUp',}
+TOUCH|{'x':891,'y':1812,'type':'downAndUp',}
+TOUCH|{'x':901,'y':1820,'type':'downAndUp',}
+TOUCH|{'x':877,'y':1024,'type':'downAndUp',}
+PRESS|{'name':'HOME','type':'downAndUp',}

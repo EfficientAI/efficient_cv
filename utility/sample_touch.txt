@@ -1,0 +1,16 @@
+TOUCH|{'x':543,'y':1704,'type':'downAndUp',}
+TOUCH|{'x':327,'y':660,'type':'downAndUp',}
+TOUCH|{'x':273,'y':1756,'type':'downAndUp',}
+TOUCH|{'x':553,'y':1784,'type':'downAndUp',}
+PRESS|{'name':'HOME','type':'downAndUp',}
+TOUCH|{'x':540,'y':1716,'type':'downAndUp',}
+TOUCH|{'x':111,'y':624,'type':'downAndUp',}
+TOUCH|{'x':162,'y':464,'type':'downAndUp',}
+TOUCH|{'x':897,'y':1844,'type':'downAndUp',}
+TOUCH|{'x':887,'y':1024,'type':'downAndUp',}
+PRESS|{'name':'MENU','type':'downAndUp',}
+PRESS|{'name':'HOME','type':'downAndUp',}
+TOUCH|{'x':118,'y':1096,'type':'downAndUp',}
+TOUCH|{'x':928,'y':1792,'type':'downAndUp',}
+PRESS|{'name':'HOME','type':'downAndUp',}
+DRAG|{'start':(432,1536),'end':(432,307),'duration':1.0,'steps':10,}
