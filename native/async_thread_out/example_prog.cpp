@@ -14,7 +14,8 @@ int global_load = 0;
 
 int load_tracker(std::mutex& i_mutex){
     while(1){
-        std::lock_guard<std::mutex> lock(i_mutex);
+        cout << "Someting" << endl;
+        //std::lock_guard<std::mutex> lock(i_mutex);
         global_load = global_load + 10;
         // Now sleep for some time
         this_thread::sleep_for(chrono::milliseconds(10000));
