@@ -8,6 +8,8 @@
 #include <mutex>
 #include <chrono>
 #include <stdlib.h>
+#include <future>
+#include <assert.h>
 
 using Clock = std::chrono::high_resolution_clock;
 
@@ -103,9 +105,9 @@ float compute_exponential(){
     }
 }
 
-void load_tracker(std::mutex& i_mutex){
+void load_tracker(std::mutex& i_mutex, std::future<void> futureObj){
     float load;
-    for(int i=0; i<100; i++){
+    while(futureObj.wait_for(std::chrono::milliseconds(1)) == std::future_status::timeout){
         load = get_cpu_load(100);
         loads.push_back(load);
         loads_average.push_back(compute_average());
@@ -113,20 +115,19 @@ void load_tracker(std::mutex& i_mutex){
         time_stamps.push_back(Clock::now().time_since_epoch().count());
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
+    //Clean up work here.
 }
-
-
 
 int main(){
     std::mutex i_mutex;
-    std::thread t1(load_tracker, std::ref(i_mutex));
+    std::promise<void> exitSignal;
+    std::future<void> futureObj = exitSignal.get_future();
+    //std::thread t1(load_tracker, std::ref(i_mutex));
+    std::thread t1(load_tracker, std::ref(i_mutex), std::move(futureObj));
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     std::lock_guard<std::mutex> lock(i_mutex);
-    //std::cout << loads.size() << std::endl;
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-    //std::cout << loads.size() << std::endl;
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-    //std::cout << loads.size() << std::endl;
+    exitSignal.set_value();
     t1.join();
     // Dumpt the load data
     //for(int i = 0;i<loads.size();i++){
@@ -135,6 +136,5 @@ int main(){
     for(int i = 0;i<loads.size();i++){
         std::cout << time_stamps[i] << " " << loads_average[i] << " " << loads_exponential[i] << " " << loads[i] << std::endl;
     }
-
     return 0;
 }
