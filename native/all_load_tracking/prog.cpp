@@ -7,7 +7,9 @@
 #include <thread>
 #include <mutex>
 #include <chrono>
-#include <stdlib.h> 
+#include <stdlib.h>
+
+using Clock = std::chrono::high_resolution_clock;
 
 enum CPUStates
 {
@@ -32,6 +34,10 @@ enum STATE
 
 const int NUM_CPU_STATES = 10;
 std::vector<float> loads;
+std::vector<float> loads_average;
+std::vector<float> loads_exponential;
+std::vector<time_t> time_stamps;
+
 
 std::vector<float> get_snapshot(){
     std::ifstream stat_file("/proc/stat");
@@ -72,28 +78,62 @@ float get_cpu_load(int sampling_freq){
     return (snap2[ACTIVE] - snap1[ACTIVE])/(snap2[TOTAL] - snap1[TOTAL]);
 }
 
+float compute_average(){
+    float sum = 0.0;
+    int window_size = 5;
+    if(loads.size() <= window_size){
+        return loads[loads.size()-1];
+    }
+    for(int i=loads.size()-1; i>=loads.size()-window_size ;i--){
+        sum = sum + loads[i];
+    }
+    return sum/(float)window_size;
+}
+
+float compute_exponential(){
+    float val = loads[loads.size()-1];
+    float factor = 0.7;
+    if(loads_exponential.size() == 0){
+        return val;
+    }
+    else{
+        val = val*factor + 
+              loads_exponential[loads_exponential.size()-1]*(1-factor);
+        return val;
+    }
+}
+
 void load_tracker(std::mutex& i_mutex){
     float load;
     for(int i=0; i<100; i++){
         load = get_cpu_load(100);
         loads.push_back(load);
+        loads_average.push_back(compute_average());
+        loads_exponential.push_back(compute_exponential());
+        time_stamps.push_back(Clock::now().time_since_epoch().count());
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 }
+
+
 
 int main(){
     std::mutex i_mutex;
     std::thread t1(load_tracker, std::ref(i_mutex));
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     std::lock_guard<std::mutex> lock(i_mutex);
-    std::cout << loads.size() << std::endl;
+    //std::cout << loads.size() << std::endl;
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-    std::cout << loads.size() << std::endl;
+    //std::cout << loads.size() << std::endl;
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-    std::cout << loads.size() << std::endl;
+    //std::cout << loads.size() << std::endl;
     t1.join();
+    // Dumpt the load data
+    //for(int i = 0;i<loads.size();i++){
+    //    std::cout << time_stamps[i] << " " << loads[i] << " " << loads_average[i] << " " << loads_exponential[i] << std::endl;
+    //}
     for(int i = 0;i<loads.size();i++){
-        std::cout << loads[i] << std::endl;
+        std::cout << time_stamps[i] << " " << loads_average[i] << " " << loads_exponential[i] << " " << loads[i] << std::endl;
     }
 
     return 0;
