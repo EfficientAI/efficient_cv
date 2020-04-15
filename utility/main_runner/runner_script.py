@@ -7,7 +7,7 @@ import subprocess
 # from matplotlib import pyplot as plt
 def run_interaction_process():
     monkey_runner_path = '/home/vishal/Android/Sdk/tools/bin/monkeyrunner'
-    event_path = 'activity.py'
+    event_path = '/home/vishal/Github_umass/efficient_cv/utility/main_runner/activity.py'
     out = subprocess.run([monkey_runner_path, event_path],
                          stdout=subprocess.DEVNULL)
 
@@ -31,7 +31,7 @@ def main():
     t = thread(target = runner.run)
     t.start()
     print("Activity has started")
-    time.sleep(20)
+    time.sleep(50)
     print("Now stopping the interaction")
     runner.terminate()
     t.join()
