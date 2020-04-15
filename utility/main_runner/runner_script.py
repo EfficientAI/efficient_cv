@@ -27,7 +27,6 @@ def main():
 
     # While the output is not produced in adb directory,
     # Repeat the automated sequence
-    stop_condition = False
     runner = screen_interaction_runner()
     t = thread(target = runner.run)
     t.start()
