@@ -168,7 +168,7 @@ int main(int argc, char* argv[]){
     int nr_runs;
     iss >> nr_runs;
     cout << filename << " " << nr_runs << endl;
-    cout << "Debug 1" << endl;
+    // cout << "Debug 1" << endl;
     unique_ptr<tflite::FlatBufferModel> model =
         tflite::FlatBufferModel::BuildFromFile(filename);
     TFLITE_MINIMAL_CHECK(model != nullptr);
@@ -184,13 +184,13 @@ int main(int argc, char* argv[]){
     vector<int> inputs = interpreter->inputs();
     vector<int> outputs = interpreter->outputs();
 
-    for(int i=0;i<inputs.size();i++){
-        cout << inputs[i] << " ";
-    }
+    // for(int i=0;i<inputs.size();i++){
+    //     cout << inputs[i] << " ";
+    // }
 
     int input_index = interpreter->inputs()[0];
     TfLiteIntArray* dims = interpreter->tensor(input_index)->dims;
-    cout << "Debug 2" << endl;
+    // cout << "Debug 2" << endl;
     int image_height = dims->data[1];
     int image_width = dims->data[2];
     int image_channel = dims->data[3];
@@ -207,13 +207,13 @@ int main(int argc, char* argv[]){
     auto start = chrono::steady_clock::now();
     auto end = chrono::steady_clock::now();
     int diff;
-    cout << "Debug 3" << endl;
+    // cout << "Debug 3" << endl;
     for(int i=0; i<nr_runs; i++){
-        auto input = interpreter->typed_tensor<float>(0);
+        auto input = interpreter->typed_tensor<float>(input_index);
         for(int j = 0; j < number_of_pixels; j++) {
             input[j] = 1;
         }
-        cout << "Debug 4" << endl;
+        //cout << "Debug 4" << endl;
         start = chrono::steady_clock::now();
         TFLITE_MINIMAL_CHECK(interpreter->Invoke() == kTfLiteOk);
         end = chrono::steady_clock::now();
@@ -232,7 +232,7 @@ int main(int argc, char* argv[]){
                         loads_exponential[i] << " " << loads[i] << endl;
     }
     for(int i=0; i<runtimes.size(); i++){
-        cout << runtimes[i] << " " << runtime_time_stamps[i] << endl;
+        cout << runtime_time_stamps[i] << " " << runtimes[i] << endl;
     }
 
     return 0;
