@@ -110,7 +110,7 @@ def get_plots(stdout):
 def main():
     adb_command = '/home/vishal/Android/Sdk/platform-tools/adb'
     program_file = '/data/local/tmp/milestone3/final_app'
-    model_file = '/data/local/tmp/milestone3/mobilenet2.tflite'
+    model_file = '/data/local/tmp/milestone3/mobilenet2_6.tflite'
     nr_runs = 1000
 
     runner = screen_interaction_runner()
