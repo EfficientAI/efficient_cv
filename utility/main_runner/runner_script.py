@@ -109,8 +109,9 @@ def get_plots(stdout):
 
 def main():
     adb_command = '/home/vishal/Android/Sdk/platform-tools/adb'
-    program_file = '/data/local/tmp/milestone3/final_app'
-    model_file = '/data/local/tmp/milestone3/mobilenet2_6.tflite'
+    # program_file = '/data/local/tmp/milestone3/final_app'
+    program_file = '/data/local/tmp/final_app_static/final_app_static'
+    model_file = '/data/local/tmp/milestone3/mobilenet2_1.tflite'
     nr_runs = 1000
 
     runner = screen_interaction_runner()
@@ -120,8 +121,12 @@ def main():
     time.sleep(20) # Wait
 
     print("Activity has started")
+    # out = subprocess.Popen([adb_command, 'shell', program_file, 
+    #                         model_file, str(nr_runs)],
+    #                         stdout=subprocess.PIPE,
+    #                         stderr=subprocess.STDOUT)
     out = subprocess.Popen([adb_command, 'shell', program_file, 
-                            model_file, str(nr_runs)],
+                            str(nr_runs)],
                             stdout=subprocess.PIPE,
                             stderr=subprocess.STDOUT)
     stdout, _ = out.communicate()

@@ -228,6 +228,7 @@ int exit_point_selection(float cpu_load, pair<float, float> &cpu_load_bound,
 int main(int argc, char* argv[]){
     /* Description for the arguments provided to the program */
     // Arg 1: number if inference runs. Eg. 100
+    // cout << "Debug 0" << endl;
     if(argc != 2) {
         fprintf(stderr, "final_app <tflite_model> <nr_runs>\n");
         return 1;
@@ -238,34 +239,49 @@ int main(int argc, char* argv[]){
                                             {70, 140}, {110, 210}, {140, 230}};
     vector<float> accuracies = {60.3, 65.4, 69.8, 71.8, 74.4, 75.0};
     float alpha = 0.33;
-    istringstream iss(argv[2]);
+    // cout << "Debug 0.5" << endl;
+    istringstream iss(argv[1]);
     int nr_runs;
     iss >> nr_runs;
     cout << nr_runs << endl;
     // cout << "Debug 1" << endl;
     unique_ptr<tflite::FlatBufferModel> model1 =
-        tflite::FlatBufferModel::BuildFromFile("mobilenet2_1.tflite");
+        tflite::FlatBufferModel::BuildFromFile("/data/local/tmp/"
+                                               "final_app_static/"
+                                               "mobilenet2_6.tflite");
     TFLITE_MINIMAL_CHECK(model1 != nullptr);
 
     unique_ptr<tflite::FlatBufferModel> model2 =
-        tflite::FlatBufferModel::BuildFromFile("mobilenet2_2.tflite");
+        tflite::FlatBufferModel::BuildFromFile("/data/local/tmp/"
+                                               "final_app_static/"
+                                               "mobilenet2_5.tflite");
     TFLITE_MINIMAL_CHECK(model2 != nullptr);
 
     unique_ptr<tflite::FlatBufferModel> model3 =
-        tflite::FlatBufferModel::BuildFromFile("mobilenet2_3.tflite");
+        tflite::FlatBufferModel::BuildFromFile("/data/local/tmp/"
+                                               "final_app_static/"
+                                               "mobilenet2_4.tflite");
     TFLITE_MINIMAL_CHECK(model3 != nullptr);
 
     unique_ptr<tflite::FlatBufferModel> model4 =
-        tflite::FlatBufferModel::BuildFromFile("mobilenet2_4.tflite");
+        tflite::FlatBufferModel::BuildFromFile("/data/local/tmp/"
+                                               "final_app_static/"
+                                               "mobilenet2_3.tflite");
     TFLITE_MINIMAL_CHECK(model4 != nullptr);
 
     unique_ptr<tflite::FlatBufferModel> model5 =
-        tflite::FlatBufferModel::BuildFromFile("mobilenet2_5.tflite");
+        tflite::FlatBufferModel::BuildFromFile("/data/local/tmp/"
+                                               "final_app_static/"
+                                                "mobilenet2_2.tflite");
     TFLITE_MINIMAL_CHECK(model5 != nullptr);
 
     unique_ptr<tflite::FlatBufferModel> model6 =
-        tflite::FlatBufferModel::BuildFromFile("mobilenet2_6.tflite");
+        tflite::FlatBufferModel::BuildFromFile("/data/local/tmp/"
+                                               "final_app_static/"
+                                               "mobilenet2_1.tflite");
     TFLITE_MINIMAL_CHECK(model6 != nullptr);
+
+    // cout << "Debug 1.5" << endl;
 
     tflite::ops::builtin::BuiltinOpResolver resolver1;
     tflite::ops::builtin::BuiltinOpResolver resolver2;
@@ -354,10 +370,12 @@ int main(int argc, char* argv[]){
         for(int j = 0; j < number_of_pixels; j++) {
             input[j] = 1;
         }
+        // cout << "Debug 3.5" << endl;
         input = interpreter2->typed_tensor<float>(input_index2);
         for(int j = 0; j < number_of_pixels; j++) {
             input[j] = 1;
         }
+        // cout << "Debug 3.6" << endl;
         input = interpreter3->typed_tensor<float>(input_index3);
         for(int j = 0; j < number_of_pixels; j++) {
             input[j] = 1;
@@ -379,10 +397,19 @@ int main(int argc, char* argv[]){
         /*
          * The logic to select the exit point is here.
          */
-        float cpu_load = loads_average[loads_average.size()-1];
+        // cout << "Debug 4" << endl;
+        float cpu_load;
+        if(loads_average.size() == 0){
+            cpu_load = 0.2;
+        }
+        else{
+            cpu_load = loads_average[loads_average.size()-1];
+        }
+        // cout << "Debug 5" << endl;
         //TODO: I should take  a lock before accesing cpu_load, but who cares.
         int exit_point = exit_point_selection(cpu_load, cpu_load_bound,
                                         runtime_ranges, accuracies, alpha);
+        // cout << exit_point << endl;
         if(exit_point == 0){
             TFLITE_MINIMAL_CHECK(interpreter1->Invoke() == kTfLiteOk);
         }
