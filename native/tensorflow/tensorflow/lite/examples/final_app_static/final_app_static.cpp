@@ -229,7 +229,7 @@ int main(int argc, char* argv[]){
     /* Description for the arguments provided to the program */
     // Arg 1: number if inference runs. Eg. 100
     // cout << "Debug 0" << endl;
-    if(argc != 2) {
+    if(argc != 4) {
         fprintf(stderr, "final_app <tflite_model> <nr_runs>\n");
         return 1;
     }
@@ -238,12 +238,17 @@ int main(int argc, char* argv[]){
     vector<pair<int, int> > runtime_ranges = {{20, 40}, {30, 55}, {50, 110},
                                             {70, 140}, {110, 210}, {140, 230}};
     vector<float> accuracies = {60.3, 65.4, 69.8, 71.8, 74.4, 75.0};
-    float alpha = 0.33;
+    int print_selection;
+    float alpha;
     // cout << "Debug 0.5" << endl;
     istringstream iss(argv[1]);
     int nr_runs;
     iss >> nr_runs;
-    cout << nr_runs << endl;
+    istringstream iss2(argv[2]);
+    iss2 >> alpha;
+    istringstream iss3(argv[3]);
+    iss3 >> print_selection;
+    cout << nr_runs << " " << alpha << " " << print_selection  << endl;
     // cout << "Debug 1" << endl;
     unique_ptr<tflite::FlatBufferModel> model1 =
         tflite::FlatBufferModel::BuildFromFile("/data/local/tmp/"
@@ -410,6 +415,9 @@ int main(int argc, char* argv[]){
         int exit_point = exit_point_selection(cpu_load, cpu_load_bound,
                                         runtime_ranges, accuracies, alpha);
         // cout << exit_point << endl;
+        if(print_selection == 1){
+            cout << exit_point << endl;
+        }
         if(exit_point == 0){
             TFLITE_MINIMAL_CHECK(interpreter1->Invoke() == kTfLiteOk);
         }
